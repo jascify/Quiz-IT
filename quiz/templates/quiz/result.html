@@ -1,4 +1,3 @@
-<!-- quiz/templates/quiz/result.html -->
 {% extends 'quiz/base.html' %}
 
 {% block content %}
@@ -14,11 +13,20 @@
         </div>
 
         {% if result.percentage >= 80 %}
-        <p class="remark excellent">Excellent! 🎉</p>
+        <p class="remark excellent">
+            <i data-lucide="trophy"></i>
+            Excellent!
+        </p>
         {% elif result.percentage >= 60 %}
-        <p class="remark good">Good Job! 👍</p>
+        <p class="remark good">
+            <i data-lucide="thumbs-up"></i>
+            Good Job!
+        </p>
         {% else %}
-        <p class="remark practice">Keep Practicing! 💪</p>
+        <p class="remark practice">
+            <i data-lucide="target"></i>
+            Keep Practicing!
+        </p>
         {% endif %}
 
         <a href="{% url 'home' %}" class="btn-primary">Back to Home</a>
