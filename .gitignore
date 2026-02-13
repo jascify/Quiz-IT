@@ -15,3 +15,6 @@ env/
 # PyCharm
 .idea/
 *.iml
+
+# Django collected static files
+/staticfiles/
