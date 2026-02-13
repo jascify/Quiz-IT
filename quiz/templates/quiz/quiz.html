@@ -1,0 +1,30 @@
+<!-- quiz/templates/quiz/quiz.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h2>Subject: {{ subject }}</h2>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for question in questions %}
+        <div class="question-card">
+            <h3>Question {{ forloop.counter }} of {{ questions|length }}</h3>
+            <p class="question-text">{{ question.question }}</p>
+
+            {% for option in question.options %}
+            <label class="option-label">
+                <input type="radio" name="question_{{ forloop.parentloop.counter0 }}" value="{{ forloop.counter0 }}" required>
+                <span>{{ option }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary">Submit Quiz</button>
+    </form>
+</div>
+{% endblock %}

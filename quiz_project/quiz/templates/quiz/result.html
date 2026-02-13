@@ -1,0 +1,21 @@
+<!-- quiz/templates/quiz/result.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="home-container">
+    <div class="result-box">
+        <h1 class="result-title">Quiz Completed!</h1>
+        
+        <div class="result-info">
+            <p><strong>Name:</strong> {{ user.first_name }}</p>
+            <p><strong>Subject:</strong> {{ result.subject }}</p>
+            <p><strong>Score:</strong> {{ result.score }}/{{ result.total }}</p>
+            <p><strong>Percentage:</strong> {{ result.percentage|floatformat:1 }}%</p>
+        </div>
+        
+        <p class="remark" style="color: {{ result.color }}">{{ result.remark }}</p>
+        
+        <a href="{% url 'home' %}" class="btn-primary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

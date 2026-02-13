@@ -1,0 +1,16 @@
+<!-- quiz/templates/quiz/choose_subject.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="home-container">
+    <div class="home-box">
+        <h1 class="page-title">Choose Subject</h1>
+        
+        {% for subject in subjects %}
+        <a href="{% url 'quiz' subject %}" class="btn-home">{{ subject }}</a>
+        {% endfor %}
+        
+        <a href="{% url 'home' %}" class="btn-secondary" style="margin-top: 20px;">Back</a>
+    </div>
+</div>
+{% endblock %}

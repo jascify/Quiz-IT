@@ -1,0 +1,16 @@
+<!-- quiz/templates/quiz/performance_menu.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="home-container">
+    <div class="home-box">
+        <h1 class="page-title">Performance Menu</h1>
+
+        <a href="{% url 'my_scores' %}" class="btn-home">View My Past Scores</a>
+        <a href="{% url 'leaderboard' %}" class="btn-home">View Leaderboard</a>
+        <a href="{% url 'distribution' %}" class="btn-home">View Score Distribution</a>
+
+        <a href="{% url 'home' %}" class="btn-secondary" style="margin-top: 20px;">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+<!-- quiz/templates/quiz/manage_questions.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="manage-container">
+    <h1 class="page-title">Manage Questions</h1>
+    
+    <div class="manage-grid">
+        {% for subject, subject_questions in questions.items %}
+        <div class="subject-section">
+            <h2>{{ subject }}</h2>
+            
+            {% for question in subject_questions %}
+            <div class="question-item">
+                <p><strong>Q{{ forloop.counter }}:</strong> {{ question.question }}</p>
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="subject" value="{{ subject }}">
+                    <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
+            </div>
+            {% endfor %}
+            
+            <button class="btn-add" onclick="showAddForm('{{ subject }}')">Add Question</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <a href="{% url 'home' %}" class="btn-secondary">Back to Home</a>
+</div>
+
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Add Question</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <input type="hidden" id="modalSubject" name="subject">
+            
+            <label>Question:</label>
+            <textarea name="question" required></textarea>
+            
+            <label>Option 1:</label>
+            <input type="text" name="option1" required>
+            
+            <label>Option 2:</label>
+            <input type="text" name="option2" required>
+            
+            <label>Option 3:</label>
+            <input type="text" name="option3" required>
+            
+            <label>Option 4:</label>
+            <input type="text" name="option4" required>
+            
+            <label>Correct Option (1-4):</label>
+            <input type="number" name="correct" min="1" max="4" required>
+            
+            <button type="submit" class="btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function showAddForm(subject) {
+    document.getElementById('modalSubject').value = subject;
+    document.getElementById('addModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('addModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('addModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

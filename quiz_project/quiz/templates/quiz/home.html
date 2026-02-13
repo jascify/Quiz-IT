@@ -1,0 +1,18 @@
+<!-- quiz/templates/quiz/home.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="home-container">
+    <div class="home-box">
+        <h1 class="welcome-title">Welcome, {{ user.first_name }}!</h1>
+        <p class="subtitle">What would you like to do?</p>
+        
+        <a href="{% url 'choose_subject' %}" class="btn-home">📝 Start Quiz</a>
+        <a href="{% url 'performance_menu' %}" class="btn-home">📊 View Performance</a>
+        <a href="{% url 'manage_questions' %}" class="btn-home">📚 Manage Questions</a>
+        <a href="{% url 'manage_users' %}" class="btn-home">👥 Manage Users</a>
+        
+        <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+    </div>
+</div>
+{% endblock %}

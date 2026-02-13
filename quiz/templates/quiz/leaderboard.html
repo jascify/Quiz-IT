@@ -1,0 +1,78 @@
+<!-- quiz/templates/quiz/leaderboard.html -->
+{% extends 'quiz/base.html' %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="performance-container">
+    <h1 class="page-title">Leaderboard - Top 10 per Subject</h1>
+
+    <div class="charts-grid">
+        <canvas id="pythonChart"></canvas>
+        <canvas id="javaChart"></canvas>
+        <canvas id="cChart"></canvas>
+        <canvas id="csharpChart"></canvas>
+    </div>
+
+    <a href="{% url 'performance_menu' %}" class="btn-primary">Back</a>
+</div>
+
+<script>
+const subjectScores = {{ subject_scores|safe }};
+
+const colors = {
+    'Python': '#3776ab',
+    'Java': '#f89820',
+    'C': '#A8B9CC',
+    'C#': '#68217A'
+};
+
+const chartIds = {
+    'Python': 'pythonChart',
+    'Java': 'javaChart',
+    'C': 'cChart',
+    'C#': 'csharpChart'
+};
+
+Object.keys(subjectScores).forEach(subject => {
+    const scores = subjectScores[subject];
+    const ctx = document.getElementById(chartIds[subject]).getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: scores.map(s => s.username),
+            datasets: [{
+                label: `${subject} Scores`,
+                data: scores.map(s => s.percentage),
+                backgroundColor: colors[subject],
+                borderColor: '#FFFFFF',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#FFFFFF' } },
+                title: { display: true, text: subject, color: '#FFFFFF' }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: '#FFFFFF' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    ticks: { color: '#FFFFFF' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

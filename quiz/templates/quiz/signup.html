@@ -1,0 +1,40 @@
+<!-- quiz/templates/quiz/signup.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1 class="app-title">Create Account</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="id_first_name">Full Name</label>
+            {{ form.first_name }}
+
+            <label for="id_username">Username</label>
+            {{ form.username }}
+
+            <label for="id_password1">Password</label>
+            {{ form.password1 }}
+
+            <label for="id_password2">Confirm Password</label>
+            {{ form.password2 }}
+
+            {% if form.errors %}
+            <div class="error-message">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn-primary">Sign Up</button>
+        </form>
+
+        <a href="{% url 'login' %}" class="btn-secondary" style="margin-top: 10px;">Back to Login</a>
+    </div>
+</div>
+{% endblock %}

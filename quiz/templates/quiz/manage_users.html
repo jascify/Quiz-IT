@@ -1,0 +1,50 @@
+<!-- quiz/templates/quiz/manage_users.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="manage-container">
+    <h1 class="page-title">Manage Users</h1>
+
+    <form method="post" style="margin-bottom: 20px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reset_all">
+        <button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to reset all scores?')">
+            Reset All Scores
+        </button>
+    </form>
+
+    <div class="users-list">
+        {% for user_info in users %}
+        <div class="user-item">
+            <div class="user-info">
+                <h3>{{ user_info.first_name }} (@{{ user_info.username }})</h3>
+                <p>{{ user_info.total_attempts }} attempts | Avg: {{ user_info.avg_score|floatformat:1 }}%</p>
+            </div>
+            <div class="user-actions">
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="clear_scores">
+                    <input type="hidden" name="user_id" value="{{ user_info.id }}">
+                    <button type="submit" class="btn-warning" onclick="return confirm('Clear scores for this user?')">
+                        Clear Scores
+                    </button>
+                </form>
+
+                {% if user_info.id != user.id %}
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_user">
+                    <input type="hidden" name="user_id" value="{{ user_info.id }}">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Delete this user account?')">
+                        Delete User
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'home' %}" class="btn-secondary">Back to Home</a>
+</div>
+{% endblock %}

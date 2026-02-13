@@ -1,0 +1,37 @@
+<div class="container mt-4">
+    <h5 class="fw-bold text-dark mb-3">Quick Actions</h5>
+    
+    <div class="row g-2 text-center">
+        <div class="col-4">
+            <a href="documents.php" class="text-decoration-none">
+                <div class="card border-0 shadow-sm py-3 h-100">
+                    <div class="mb-2">
+                        <i class="fas fa-file-alt fa-2x" style="color: #1976D2;"></i>
+                    </div>
+                    <small class="fw-bold text-dark" style="font-size: 0.8rem;">Request<br>Doc</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-4">
+            <a href="activity.php?filter=pending" class="text-decoration-none">
+                <div class="card border-0 shadow-sm py-3 h-100">
+                    <div class="mb-2">
+                        <i class="fas fa-map-marker-alt fa-2x" style="color: #F57C00;"></i>
+                    </div>
+                    <small class="fw-bold text-dark" style="font-size: 0.8rem;">Track<br>Status</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-4">
+            <div class="card border-0 shadow-sm py-3 h-100" data-bs-toggle="modal" data-bs-target="#idModal" style="cursor: pointer;">
+                <div class="mb-2">
+                    <i class="fas fa-id-card fa-2x" style="color: #D32F2F;"></i>
+                </div>
+                <small class="fw-bold text-dark" style="font-size: 0.8rem;">My<br>Digital ID</small>
+            </div>
+        </div>
+    </div>
+    
+</div>

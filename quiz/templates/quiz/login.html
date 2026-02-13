@@ -1,0 +1,32 @@
+<!-- quiz/templates/quiz/login.html -->
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1 class="app-title">Programming Quiz</h1>
+        <h2 class="auth-title">Login to Your Account</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="id_username">Username</label>
+            {{ form.username }}
+
+            <label for="id_password">Password</label>
+            {{ form.password }}
+
+            {% if form.errors %}
+            <div class="error-message">Invalid username or password</div>
+            {% endif %}
+
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+
+        <div class="separator"></div>
+
+        <p class="auth-switch">Don't have an account?</p>
+        <a href="{% url 'signup' %}" class="btn-secondary">Sign Up</a>
+    </div>
+</div>
+{% endblock %}

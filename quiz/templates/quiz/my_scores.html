@@ -1,0 +1,62 @@
+<!-- quiz/templates/quiz/my_scores.html -->
+{% extends 'quiz/base.html' %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="performance-container">
+    <h1 class="page-title">Performance History - {{ user.first_name }}</h1>
+
+    {% if scores %}
+    <canvas id="scoreChart" width="400" height="200"></canvas>
+    {% else %}
+    <p class="no-data">No scores found</p>
+    {% endif %}
+
+    <a href="{% url 'performance_menu' %}" class="btn-primary">Back</a>
+</div>
+
+<script>
+const scoreData = {{ score_data|safe }};
+
+if (scoreData.attempts.length > 0) {
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: scoreData.attempts,
+            datasets: [{
+                label: 'Score (%)',
+                data: scoreData.percentages,
+                borderColor: '#5BC0BE',
+                backgroundColor: 'rgba(91, 192, 190, 0.3)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#FFFFFF' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: '#FFFFFF' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#FFFFFF' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}
