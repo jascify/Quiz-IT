@@ -1,4 +1,4 @@
-# 🎮 Quiz IT
+# 🎮 Quiz-IT
 
 A fun Django-based quiz platform where you can take quizzes, track your scores, and challenge yourself!  
 Deployed live on Render for anyone to try.
