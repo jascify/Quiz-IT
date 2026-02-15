@@ -10,6 +10,16 @@ Deployed live on Render for anyone to try.
 
 ---
 
+## ✨ Features
+- User authentication (login & logout)
+- Interactive quiz experience
+- Instant results after quiz submission
+- Score tracking system
+- Performance visualization using Matplotlib charts
+- Responsive design with custom CSS
+
+---
+
 ## 🛠️ Tech Stack
 - **Python 3.13**  
 - **Django 5.2.8**  
@@ -18,7 +28,15 @@ Deployed live on Render for anyone to try.
 - **Render**  
 
 ---
+  
+## 🔮 Future Improvements
+- Add leaderboard system
+- Add timed quiz mode
+- Allow users to create their own quizzes
+- Improve UI/UX design
+- Add user profile dashboard with history
 
+---
 ## 💻 Setup (Run Locally)
 ```bash
 git clone https://github.com/jascify/Quiz-IT.git
@@ -32,3 +50,4 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+
