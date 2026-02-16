@@ -32,7 +32,6 @@ Deployed live on Render for anyone to try.
 ## 🔮 Future Improvements
 - Add leaderboard system
 - Add timed quiz mode
-- Allow users to create their own quizzes
 - Improve UI/UX design
 - Add user profile dashboard with history
 
