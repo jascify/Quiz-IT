@@ -11,42 +11,61 @@ Deployed live on Render for anyone to try.
 ---
 
 ## ✨ Features
-- User authentication (login & logout)
-- Interactive quiz experience
-- Instant results after quiz submission
-- Score tracking system
-- Performance visualization using Matplotlib charts
-- Responsive design with custom CSS
+- **User Authentication:** Secure signup, login, and session management.
+- **Interactive Quizzes:** Test your skills in Python, Java, C, and C# with real-time progress tracking and instant results.
+- **Performance Dashboard:** Explore your past scores, see how you stack up on the **Leaderboard**, and view your score distribution via beautiful, interactive **Chart.js** graphs.
+- **Manage Questions:** A clean, grid-based dashboard allowing users to easily add, edit, or delete multiple-choice questions for any subject.
 
 ---
 
 ## 🛠️ Tech Stack
-- **Python 3.13**  
-- **Django 5.2.8**  
-- **Gunicorn & Uvicorn**  
-- **HTML & CSS**   
-- **Render**  
+- **Backend:** Python 3.13, Django 5.2.8
+- **Frontend:** HTML5, CSS3, FontAwesome 6
+- **Data Visualization:** Chart.js
+- **Database:** SQLite3
+- **Deployment:** Render, Gunicorn & Uvicorn, WhiteNoise (Static File Management)
 
 ---
   
 ## 🔮 Future Improvements
-- Add leaderboard system
-- Add timed quiz mode
-- Improve UI/UX design
-- Add user profile dashboard with history
+- Add timed quiz mode (countdown timers for added difficulty)
+- Expand subject catalog and introduce difficulty levels
+- Customizable user avatars and profiles
+- Social sharing for high scores and quiz results
 
 ---
+
 ## 💻 Setup (Run Locally)
+
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/jascify/Quiz-IT.git
-cd quiz_project
+cd Quiz-IT
+```
+
+2. **Create and activate a virtual environment:**
+```bash
 python -m venv .venv
-# Activate virtual environment:
-# Windows
+
+# Windows:
 .venv\Scripts\activate
-# Linux/macOS
+
+# Linux/macOS:
 source .venv/bin/activate
+```
+
+3. **Install dependencies:**
+```bash
 pip install -r requirements.txt
+```
+
+4. **Run migrations:**
+```bash
 python manage.py migrate
+```
+
+5. **Start the development server:**
+```bash
 python manage.py runserver
+
 
