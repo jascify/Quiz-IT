@@ -10,29 +10,29 @@
             <p class="dashboard-subtitle">View your overall stats and manage your data</p>
         </div>
         <a href="{% url 'home' %}" class="btn-back">
-            <i data-lucide="arrow-left"></i>
+            <i class="fa-solid fa-arrow-left"></i>
             <span>Back</span>
         </a>
     </div>
 
     <div class="users-list">
         {% for user_info in users %}
-        <div class="user-item" style="background: #ffffff; padding: 32px; border-radius: 20px; border: 1px solid #e5e7eb; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
+        <div class="user-item" style="background: #1A1730; padding: 32px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6); display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
             <div class="user-info" style="display: flex; gap: 24px; align-items: center;">
-                <div class="user-avatar" style="width: 64px; height: 64px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white;">
+                <div class="user-avatar" style="width: 64px; height: 64px; background: linear-gradient(135deg, #7F77DD 0%, #665dc6 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white;">
                     {{ user_info.first_name|slice:":1"|upper }}
                 </div>
                 <div>
-                    <h3 style="font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 4px;">{{ user_info.first_name }} (@{{ user_info.username }})</h3>
-                    <p style="color: #6b7280; font-size: 15px; font-weight: 500;">{{ user_info.total_attempts }} attempts | Avg Score: {{ user_info.avg_score|floatformat:1 }}%</p>
+                    <h3 style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">{{ user_info.first_name }} (@{{ user_info.username }})</h3>
+                    <p style="color: #94a3b8; font-size: 15px; font-weight: 500;">{{ user_info.total_attempts }} attempts | Avg Score: {{ user_info.avg_score|floatformat:1 }}%</p>
                 </div>
             </div>
             <div class="user-actions">
                 <form method="post" style="display: inline;">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="clear_my_scores">
-                    <button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to reset all your scores? This action cannot be undone.')" style="display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                        <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
+                    <button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to reset all your scores? This action cannot be undone.')" style="display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(239, 68, 68, 0.1); color: #D85A30; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <i class="fa-solid fa-rotate-left" style="width: 18px; height: 18px;"></i>
                         Reset My Scores
                     </button>
                 </form>
