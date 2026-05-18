@@ -14,7 +14,7 @@
             <p class="dashboard-subtitle">Top 10 performers in each subject</p>
         </div>
         <a href="{% url 'performance_menu' %}" class="btn-back">
-            <i data-lucide="arrow-left"></i>
+            <i class="fa-solid fa-arrow-left"></i>
             <span>Back</span>
         </a>
     </div>
@@ -23,7 +23,7 @@
 
     <div id="noDataMessage" class="empty-state-card" style="display: none;">
         <div class="empty-state-icon">
-            <i data-lucide="trophy"></i>
+            <i class="fa-solid fa-trophy"></i>
         </div>
         <h3>No leaderboard data available yet</h3>
         <p>Scores will appear here once quizzes are completed.</p>
@@ -113,12 +113,12 @@ Object.keys(chartIds).forEach(function(subject) {
                 x: {
                     beginAtZero: true,
                     max: 100,
-                    ticks: { color: '#6b7280', font: { family: 'Inter' }, callback: function(v) { return v + '%'; } },
-                    grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                    ticks: { color: '#94a3b8', font: { family: 'Inter' }, callback: function(v) { return v + '%'; } },
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     border: { display: false }
                 },
                 y: {
-                    ticks: { color: '#1f2937', font: { family: 'Inter', size: 12, weight: 600 } },
+                    ticks: { color: '#e2e8f0', font: { family: 'Inter', size: 12, weight: 600 } },
                     grid: { display: false },
                     border: { display: false }
                 }
