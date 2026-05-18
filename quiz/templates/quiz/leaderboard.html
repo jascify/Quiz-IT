@@ -1,31 +1,44 @@
 {% extends 'quiz/base.html' %}
 
+{% block title %}Leaderboard - Quiz-IT{% endblock %}
+
 {% block extra_css %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="performance-container">
-    <h1 class="page-title">Leaderboard - Top 10 per Subject</h1>
-
-    <div class="charts-grid">
-        <canvas id="pythonChart"></canvas>
-        <canvas id="javaChart"></canvas>
-        <canvas id="cChart"></canvas>
-        <canvas id="csharpChart"></canvas>
+<div class="dashboard-page">
+    <div class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">Leaderboard</h1>
+            <p class="dashboard-subtitle">Top 10 performers in each subject</p>
+        </div>
+        <a href="{% url 'performance_menu' %}" class="btn-back">
+            <i data-lucide="arrow-left"></i>
+            <span>Back</span>
+        </a>
     </div>
 
-    <a href="{% url 'performance_menu' %}" class="btn-primary">Back</a>
+    <div id="chartsArea" class="charts-grid-modern"></div>
+
+    <div id="noDataMessage" class="empty-state-card" style="display: none;">
+        <div class="empty-state-icon">
+            <i data-lucide="trophy"></i>
+        </div>
+        <h3>No leaderboard data available yet</h3>
+        <p>Scores will appear here once quizzes are completed.</p>
+        <a href="{% url 'choose_subject' %}" class="btn-primary-sm">Start a Quiz</a>
+    </div>
 </div>
 
 <script>
 const subjectScores = {{ subject_scores|safe }};
 
-const colors = {
-    'Python': '#3776ab',
-    'Java': '#f89820',
-    'C': '#A8B9CC',
-    'C#': '#68217A'
+const gradients = {
+    'Python': ['#3776ab', '#5a9fd4'],
+    'Java':   ['#f89820', '#fbb034'],
+    'C':      ['#5c6bc0', '#7986cb'],
+    'C#':     ['#68217A', '#9c4dcc']
 };
 
 const chartIds = {
@@ -35,43 +48,87 @@ const chartIds = {
     'C#': 'csharpChart'
 };
 
-Object.keys(subjectScores).forEach(subject => {
-    const scores = subjectScores[subject];
-    const ctx = document.getElementById(chartIds[subject]).getContext('2d');
+var hasData = false;
+
+Object.keys(chartIds).forEach(function(subject) {
+    var scores = subjectScores[subject];
+    if (!scores || scores.length === 0) return;
+
+    hasData = true;
+
+    var card = document.createElement('div');
+    card.className = 'chart-card';
+
+    var header = document.createElement('div');
+    header.className = 'chart-card-header';
+    header.innerHTML = '<h3>' + subject + '</h3><span class="chart-card-badge">' + scores.length + ' player' + (scores.length !== 1 ? 's' : '') + '</span>';
+    card.appendChild(header);
+
+    var canvasWrap = document.createElement('div');
+    canvasWrap.className = 'chart-canvas-wrap';
+    var canvas = document.createElement('canvas');
+    canvas.id = chartIds[subject];
+    canvasWrap.appendChild(canvas);
+    card.appendChild(canvasWrap);
+
+    document.getElementById('chartsArea').appendChild(card);
+
+    var ctx = canvas.getContext('2d');
+    var gradient = ctx.createLinearGradient(0, 0, 400, 0);
+    gradient.addColorStop(0, gradients[subject][0]);
+    gradient.addColorStop(1, gradients[subject][1]);
 
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: scores.map(s => s.username),
+            labels: scores.map(function(s) { return s.username; }),
             datasets: [{
-                label: `${subject} Scores`,
-                data: scores.map(s => s.percentage),
-                backgroundColor: colors[subject],
-                borderColor: '#FFFFFF',
-                borderWidth: 1
+                label: 'Score (%)',
+                data: scores.map(function(s) { return s.percentage; }),
+                backgroundColor: gradient,
+                borderRadius: 6,
+                borderSkipped: false
             }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
-                legend: { labels: { color: '#FFFFFF' } },
-                title: { display: true, text: subject, color: '#FFFFFF' }
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(20, 25, 50, 0.95)',
+                    titleColor: '#a5b4fc',
+                    bodyColor: '#e8eaf6',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    cornerRadius: 10,
+                    padding: 12,
+                    callbacks: {
+                        label: function(ctx) { return ctx.parsed.x.toFixed(1) + '%'; }
+                    }
+                }
             },
             scales: {
                 x: {
                     beginAtZero: true,
                     max: 100,
-                    ticks: { color: '#FFFFFF' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    ticks: { color: '#9ca3af', font: { family: 'Inter' }, callback: function(v) { return v + '%'; } },
+                    grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                    border: { display: false }
                 },
                 y: {
-                    ticks: { color: '#FFFFFF' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    ticks: { color: '#e8eaf6', font: { family: 'Inter', size: 12, weight: 500 } },
+                    grid: { display: false },
+                    border: { display: false }
                 }
             }
         }
     });
 });
+
+if (!hasData) {
+    document.getElementById('noDataMessage').style.display = 'flex';
+}
 </script>
 {% endblock %}

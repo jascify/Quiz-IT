@@ -1,57 +1,104 @@
 {% extends 'quiz/base.html' %}
 
+{% block title %}My Scores - Quiz-IT{% endblock %}
+
 {% block extra_css %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="performance-container">
-    <h1 class="page-title">Performance History - {{ user.first_name }}</h1>
+<div class="dashboard-page">
+    <div class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">Performance History</h1>
+            <p class="dashboard-subtitle">Track your progress over time, {{ user.first_name }}</p>
+        </div>
+        <a href="{% url 'performance_menu' %}" class="btn-back">
+            <i data-lucide="arrow-left"></i>
+            <span>Back</span>
+        </a>
+    </div>
 
     {% if scores %}
-    <canvas id="scoreChart" width="400" height="200"></canvas>
+    <div class="chart-card chart-card-wide">
+        <div class="chart-card-header">
+            <h3>Score Trend</h3>
+            <span class="chart-card-badge">{{ scores|length }} attempt{{ scores|length|pluralize }}</span>
+        </div>
+        <div class="chart-canvas-wrap chart-canvas-wide">
+            <canvas id="scoreChart"></canvas>
+        </div>
+    </div>
     {% else %}
-    <p class="no-data">No scores found</p>
+    <div class="empty-state-card">
+        <div class="empty-state-icon">
+            <i data-lucide="line-chart"></i>
+        </div>
+        <h3>No performance data available yet</h3>
+        <p>Complete a quiz to start tracking your scores here.</p>
+        <a href="{% url 'choose_subject' %}" class="btn-primary-sm">Start a Quiz</a>
+    </div>
     {% endif %}
-
-    <a href="{% url 'performance_menu' %}" class="btn-primary">Back</a>
 </div>
 
 <script>
 const scoreData = {{ score_data|safe }};
 
 if (scoreData.attempts.length > 0) {
-    const ctx = document.getElementById('scoreChart').getContext('2d');
+    var ctx = document.getElementById('scoreChart').getContext('2d');
+    var gradient = ctx.createLinearGradient(0, 0, 0, 350);
+    gradient.addColorStop(0, 'rgba(102, 126, 234, 0.35)');
+    gradient.addColorStop(1, 'rgba(102, 126, 234, 0.0)');
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: scoreData.attempts,
+            labels: scoreData.attempts.map(function(a) { return 'Attempt ' + a; }),
             datasets: [{
                 label: 'Score (%)',
                 data: scoreData.percentages,
-                borderColor: '#5BC0BE',
-                backgroundColor: 'rgba(91, 192, 190, 0.3)',
+                borderColor: '#667eea',
+                backgroundColor: gradient,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointBackgroundColor: '#667eea',
+                pointBorderColor: '#1e233c',
+                pointBorderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                borderWidth: 3
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
-                legend: {
-                    labels: { color: '#FFFFFF' }
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(20, 25, 50, 0.95)',
+                    titleColor: '#a5b4fc',
+                    bodyColor: '#e8eaf6',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    cornerRadius: 10,
+                    padding: 12,
+                    callbacks: {
+                        label: function(ctx) { return ctx.parsed.y.toFixed(1) + '%'; }
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
                     max: 100,
-                    ticks: { color: '#FFFFFF' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    ticks: { color: '#9ca3af', font: { family: 'Inter' }, callback: function(v) { return v + '%'; } },
+                    grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                    border: { display: false }
                 },
                 x: {
-                    ticks: { color: '#FFFFFF' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    ticks: { color: '#9ca3af', font: { family: 'Inter', size: 11 } },
+                    grid: { display: false },
+                    border: { display: false }
                 }
             }
         }

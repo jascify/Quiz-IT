@@ -1,29 +1,85 @@
 {% extends 'quiz/base.html' %}
 
+{% block title %}{{ subject }} Quiz - Quiz-IT{% endblock %}
+
 {% block content %}
-<div class="quiz-container">
-    <div class="quiz-header">
-        <h2>Subject: {{ subject }}</h2>
+<div class="quiz-page">
+    <div class="quiz-top-bar">
+        <div class="quiz-top-info">
+            <span class="quiz-subject-tag">{{ subject }}</span>
+            <span class="quiz-question-total">{{ questions|length }} question{{ questions|length|pluralize }}</span>
+        </div>
+        <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="progressFill"></div>
+        </div>
     </div>
 
-    <form method="post">
+    <form method="post" id="quizForm">
         {% csrf_token %}
 
         {% for question in questions %}
-        <div class="question-card">
-            <h3>Question {{ forloop.counter }} of {{ questions|length }}</h3>
-            <p class="question-text">{{ question.question }}</p>
+        <div class="quiz-question-card" data-index="{{ forloop.counter0 }}">
+            <div class="quiz-question-label">
+                <span class="quiz-q-number">Question {{ forloop.counter }}</span>
+                <span class="quiz-q-of">of {{ questions|length }}</span>
+            </div>
+            <p class="quiz-question-text">{{ question.question }}</p>
 
-            {% for option in question.options %}
-            <label class="option-label">
-                <input type="radio" name="question_{{ forloop.parentloop.counter0 }}" value="{{ forloop.counter0 }}" required>
-                <span>{{ option }}</span>
-            </label>
-            {% endfor %}
+            <div class="quiz-options">
+                {% for option in question.options %}
+                <label class="quiz-option">
+                    <input type="radio" name="question_{{ forloop.parentloop.counter0 }}" value="{{ forloop.counter0 }}" required>
+                    <span class="quiz-option-marker">
+                        {% if forloop.counter == 1 %}A
+                        {% elif forloop.counter == 2 %}B
+                        {% elif forloop.counter == 3 %}C
+                        {% else %}D
+                        {% endif %}
+                    </span>
+                    <span class="quiz-option-text">{{ option }}</span>
+                </label>
+                {% endfor %}
+            </div>
         </div>
         {% endfor %}
 
-        <button type="submit" class="btn-primary">Submit Quiz</button>
+        <div class="quiz-submit-area">
+            <button type="submit" class="btn-submit-quiz">
+                <i data-lucide="send"></i>
+                <span>Submit Quiz</span>
+            </button>
+        </div>
     </form>
 </div>
+
+<script>
+var form = document.getElementById('quizForm');
+var radios = form.querySelectorAll('input[type="radio"]');
+var total = {{ questions|length }};
+var progressFill = document.getElementById('progressFill');
+
+function updateProgress() {
+    var answered = new Set();
+    radios.forEach(function(r) {
+        if (r.checked) answered.add(r.name);
+    });
+    var pct = (answered.size / total) * 100;
+    progressFill.style.width = pct + '%';
+}
+
+radios.forEach(function(r) {
+    r.addEventListener('change', updateProgress);
+});
+
+form.addEventListener('submit', function(e) {
+    var answered = new Set();
+    radios.forEach(function(r) {
+        if (r.checked) answered.add(r.name);
+    });
+    if (answered.size < total) {
+        e.preventDefault();
+        alert('Please answer all ' + total + ' questions before submitting the quiz.');
+    }
+});
+</script>
 {% endblock %}

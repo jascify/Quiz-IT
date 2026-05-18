@@ -1,83 +1,418 @@
 {% extends 'quiz/base.html' %}
 
+{% block title %}Manage Questions - Quiz-IT{% endblock %}
+
 {% block content %}
-<div class="manage-container">
-    <h1 class="page-title">Manage Questions</h1>
+<style>
+/* Light Educational Theme Overrides specifically for Manage Questions */
+body {
+    background: #f4fdf8 !important; /* Minty white */
+    color: #1f2937 !important;
+}
+.dashboard-page {
+    padding: 40px 24px;
+    max-width: 1000px;
+}
+.dashboard-header { margin-bottom: 40px; }
+.dashboard-title { color: #064e3b !important; letter-spacing: -0.5px; }
+.dashboard-subtitle { color: #4b5563 !important; }
+.btn-back {
+    background: #ffffff !important;
+    color: #065f46 !important;
+    border: 1px solid #d1fae5 !important;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+}
+.btn-back:hover {
+    background: #ecfdf5 !important;
+    border-color: #34d399 !important;
+    transform: translateY(-2px);
+}
 
-    <div class="manage-grid">
+/* 2x2 Grid Layout */
+#subjectsGridView {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+}
+@media (max-width: 768px) {
+    #subjectsGridView { grid-template-columns: 1fr; }
+}
+
+.subject-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 24px;
+    padding: 40px 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+.subject-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 25px 30px -5px rgba(16, 185, 129, 0.15) !important;
+    border-color: #a7f3d0 !important;
+}
+
+/* Green Color Accents */
+.accent-1 { border-top: 6px solid #10b981 !important; }
+.accent-2 { border-top: 6px solid #059669 !important; }
+.accent-3 { border-top: 6px solid #34d399 !important; }
+.accent-4 { border-top: 6px solid #047857 !important; }
+
+.subject-icon-wrap {
+    width: 80px; height: 80px;
+    background: #ecfdf5; color: #10b981;
+    border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+}
+.subject-icon-wrap svg { width: 40px; height: 40px; fill: currentColor; }
+
+.subject-card h2 { font-size: 24px; color: #1f2937 !important; font-weight: 700; margin-bottom: 12px; }
+.subject-card .badge {
+    background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
+    padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;
+}
+
+/* Questions View */
+.subject-questions-view {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 15px 35px -5px rgba(0,0,0,0.05);
+    border: 1px solid #f3f4f6;
+}
+.sq-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 40px; padding-bottom: 24px; border-bottom: 2px solid #f3f4f6;
+}
+.sq-title { color: #064e3b; font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.sq-subtitle { color: #6b7280; font-size: 15px; }
+
+.btn-back-sq {
+    background: #f3f4f6; border: none; color: #4b5563;
+    padding: 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.btn-back-sq:hover { background: #e5e7eb; color: #1f2937; }
+
+/* Question Cards */
+.question-row {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    transition: all 0.2s;
+}
+.question-row:hover {
+    background: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08);
+    border-color: #d1fae5 !important;
+}
+
+.q-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+.q-title-wrap { display: flex; align-items: flex-start; gap: 16px; flex: 1; }
+.q-number {
+    width: 36px; height: 36px;
+    background: #10b981; color: white;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; flex-shrink: 0; font-size: 16px;
+}
+.q-text { font-size: 18px; color: #111827; font-weight: 700; line-height: 1.5; margin: 0; }
+
+.q-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+@media (max-width: 1024px) { .q-options { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .q-options { grid-template-columns: 1fr; } }
+
+.q-option {
+    padding: 16px; border-radius: 12px; font-size: 15px;
+    background: #ffffff; border: 1px solid #e5e7eb;
+    color: #374151; display: flex; align-items: center; font-weight: 500;
+}
+.q-option.correct { background: #f0fdf4; border-color: #10b981; color: #064e3b; font-weight: 600; box-shadow: inset 0 0 0 1px #10b981; }
+.q-option strong { margin-right: 12px; color: #6b7280; font-weight: 700; }
+.q-option.correct strong { color: #10b981; }
+
+.q-actions { display: flex; gap: 12px; flex-shrink: 0; }
+.btn-action-edit {
+    background: #f3f4f6; color: #4b5563; padding: 10px 16px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+}
+.btn-action-edit:hover { background: #e5e7eb; color: #1f2937; }
+.btn-action-delete {
+    background: #fef2f2; color: #ef4444; padding: 10px 16px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+}
+.btn-action-delete:hover { background: #fee2e2; }
+
+/* Light Theme Modal */
+.modal-overlay.active { background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); }
+.modal-panel { background: #ffffff !important; border: none !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border-radius: 24px; }
+.modal-panel-header h2 { color: #065f46 !important; font-weight: 800; }
+.form-group label { color: #374151 !important; font-weight: 600; }
+.form-group input, .form-group textarea, .form-group select {
+    background: #f9fafb !important; border: 1px solid #d1d5db !important; color: #1f2937 !important; border-radius: 12px;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: #10b981 !important; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+}
+.btn-submit { background: #10b981 !important; color: white !important; font-size: 16px; border-radius: 14px; }
+.btn-submit:hover { background: #059669 !important; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3) !important; }
+.btn-primary-sm { background: #10b981 !important; color: white !important; font-size: 15px; padding: 12px 20px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-primary-sm:hover { background: #059669 !important; box-shadow: 0 8px 15px -3px rgba(16, 185, 129, 0.3) !important; transform: translateY(-2px); }
+.modal-close { background: #f3f4f6 !important; color: #6b7280 !important; }
+.modal-close:hover { background: #e5e7eb !important; color: #1f2937 !important; }
+</style>
+
+<div class="dashboard-page">
+    <div class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">Manage Questions</h1>
+            <p class="dashboard-subtitle">Educational dashboard for maintaining quiz subjects</p>
+        </div>
+        <a href="{% url 'home' %}" class="btn-back">
+            <i data-lucide="arrow-left"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
+
+    <!-- SUBJECTS GRID VIEW (2x2) -->
+    <div id="subjectsGridView">
         {% for subject, subject_questions in questions.items %}
-        <div class="subject-section">
-            <h2>{{ subject }}</h2>
-
-            {% for question in subject_questions %}
-            <div class="question-item">
-                <p><strong>Q{{ forloop.counter }}:</strong> {{ question.question }}</p>
-                <form method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="subject" value="{{ subject }}">
-                    <input type="hidden" name="index" value="{{ forloop.counter0 }}">
-                    <button type="submit" class="btn-delete">Delete</button>
-                </form>
+        <div class="subject-card {% if forloop.counter == 1 %}accent-1{% elif forloop.counter == 2 %}accent-2{% elif forloop.counter == 3 %}accent-3{% else %}accent-4{% endif %}" onclick="openSubject('{{ subject|slugify }}')">
+            <div class="subject-icon-wrap">
+                <!-- Simple SVG icons based on subject string -->
+                {% if subject == 'Python' %}
+                <svg viewBox="0 0 24 24"><path d="M14.226 3.123c-2.316-.251-4.707-.266-6.848.169-2.072.422-2.905 1.341-3.218 2.65-.306 1.282-.249 2.766-.234 4.093h4.632v1.442H3.729c-1.378 0-2.348 1.15-2.618 2.508-.261 1.312-.178 2.775.05 4.079.25 1.433 1.242 2.378 2.593 2.697 2.052.485 4.417.511 6.643.152.924-.149 1.411-.795 1.624-1.636.19-.753.216-1.558.216-2.35v-1.127H8.625c-.914 0-1.684-.694-1.742-1.61-.06-1.02-.016-2.062.115-3.076.12-.924.872-1.642 1.8-1.642h6.126c1.373 0 2.34-1.134 2.613-2.476.265-1.298.176-2.739-.052-4.02-.258-1.455-1.258-2.39-2.64-2.705a30.505 30.505 0 0 0-4.041-.22zM10.16 5.514c.488 0 .884.396.884.884 0 .487-.396.883-.884.883a.884.884 0 1 1 0-1.767zm9.648 3.52c-.378.026-.745.105-1.077.247-1.05.449-1.378 1.401-1.464 2.351-.08.887-.042 1.838.077 2.716.113.844.757 1.472 1.6 1.472h3.585c1.233 0 2.126 1.002 2.376 2.19.245 1.161.168 2.457-.046 3.612-.236 1.267-1.136 2.1-2.376 2.384-2.14.492-4.577.51-6.852.126-.957-.16-1.477-.85-1.68-1.745-.185-.815-.221-1.685-.221-2.54v-1.155h3.636c.928 0 1.71-.708 1.768-1.64.056-.913.013-1.848-.11-2.76-.118-.87-.833-1.56-1.72-1.56H11.02v-1.45c0-1.396 1.05-2.45 2.417-2.708 2.158-.406 4.479-.427 6.666 0 1.343.262 2.33 1.22 2.593 2.593.264 1.37.195 2.873-.047 4.218-.242 1.341-1.18 2.253-2.52 2.535l-2.072.434v-2.015c0-2.074-1.373-3.664-3.415-4.22-.611-.166-1.258-.24-1.921-.24zM13.84 17.6c.488 0 .884.396.884.884s-.396.883-.884.883a.884.884 0 1 1 0-1.767z"/></svg>
+                {% elif subject == 'Java' %}
+                <svg viewBox="0 0 24 24"><path d="M12.923 15.352c-.655 0-1.58.125-2.607.41-.652.18-1.411.45-2.091.758-.934.42-1.529.837-1.529 1.246 0 .393.553.805 1.503 1.258.988.471 2.222.753 3.424.753 1.037 0 1.956-.201 2.576-.563.855-.5.855-1.187 0-1.688a5.556 5.556 0 0 0-1.173-.591c-.027-.01-.061-.019-.074-.035-.018-.022 0-.063.023-.082a.855.855 0 0 1 .158-.1c.32-.162.771-.35 1.353-.541.488-.161 1.264-.32 1.968-.32 1.505 0 1.963.669 1.963 1.487 0 1.706-3.328 3.092-7.857 3.092C5.975 20.436 2 18.992 2 17.202c0-1.042 1.492-2.146 4.316-2.738 1.472-.31 3.585-.436 5.378-.436h.057c.394 0 1.13.064 2.193.208 1.36.183 2.186.417 2.227.428l.061.02c.045.011.08.01.107-.01a.193.193 0 0 0 .041-.05c.032-.057.042-.236.002-.519-.138-.962-1.107-1.517-2.698-1.517-.557 0-1.186.064-1.84.184-.503.092-1.03.22-1.536.353-.021.006-.051.011-.063 0a.07.07 0 0 1-.013-.053c.01-.044.053-.102.133-.166.703-.564 1.839-.933 3.256-.933.918 0 1.785.161 2.456.444.629.266 1.002.668 1.002 1.196 0 .584-.367 1.05-1.077 1.369-.475.213-1.092.384-1.746.521-1.396.29-3.087.433-4.633.433zm.459-6.388c-1.31 0-2.486.291-3.212.802-.329.231-.502.49-.502.756 0 .445.376.843 1.082 1.13.627.255 1.442.435 2.302.502.046.004.09.006.136.006h.034a.17.17 0 0 0 .1-.041c.026-.024.032-.061.012-.097-.02-.036-.089-.104-.199-.187-.872-.656-1.11-1.332-1.11-1.626 0-.256.242-.497.683-.679.529-.219 1.258-.336 2.05-.336.88 0 1.636.142 2.133.398.375.193.593.447.593.738 0 .565-.63 1.059-1.724 1.364-1.036.289-2.285.434-3.411.434h-.056c-.035 0-.074.001-.1.016a.105.105 0 0 0-.041.055c-.013.044.005.105.05.159.208.248.66.425 1.228.483.256.026.541.04.832.04.59 0 1.246-.046 1.916-.145.83-.122 1.61-.318 2.195-.558.742-.303 1.168-.748 1.168-1.265 0-.547-.417-.999-1.225-1.306-1.157-.442-2.715-.678-4.364-.678zM14.07 4.22c-1.304 0-2.316.353-2.923.948-.285.281-.448.601-.448.91 0 .393.261.761.745 1.065.419.263.957.452 1.547.551a.11.11 0 0 0 .076-.01c.018-.01.026-.03.023-.053l-.004-.022c-.066-.341-.11-.853.072-1.341.205-.554.671-1.018 1.488-1.35.327-.132.7-.225 1.11-.278.026-.003.056-.006.071-.023a.08.08 0 0 0 .01-.061c-.014-.047-.07-.101-.157-.156-.708-.445-1.642-.693-2.617-.693zm8.93 12.912c.983 0 1.058.468.966.828-.21.821-2.26 1.345-4.102 1.583-.021.003-.046.003-.06-.011a.068.068 0 0 1-.007-.061c.013-.042.067-.091.153-.131a4.912 4.912 0 0 0 1.536-1.114c.269-.296.38-.593.238-.802-.279-.413-1.32-.387-2.735.037-.024.007-.058.005-.078-.01a.07.07 0 0 1-.027-.052c-.006-.051.025-.138.084-.218.423-.574.88-.952 1.428-1.12.357-.109.689-.137.994-.067.753.172 1.61 1.138 1.61 1.138zM14.664.06c-.841 0-1.637.288-2.204.757-.597.493-.846 1.127-.714 1.761.127.604.542 1.171 1.196 1.564.026.015.062.015.084-.002.021-.017.025-.044.015-.076-.118-.396-.134-.841.01-1.258.172-.497.558-.937 1.252-1.298.24-.124.516-.226.83-.306.015-.004.032-.01.042-.023a.06.06 0 0 0 .007-.042c-.012-.047-.076-.098-.168-.145-.589-.3-1.332-.464-2.148-.464zm4.842 16.592c0 2.21-4.008 4.003-8.956 4.003s-8.956-1.793-8.956-4.003c0-.986.793-1.888 2.128-2.61a.083.083 0 0 0 .041-.061c.005-.035-.015-.073-.047-.1-.453-.386-.714-.803-.714-1.233 0-1.077 1.83-1.95 4.088-1.95.127 0 .253.003.376.01a.066.066 0 0 0 .061-.027c.015-.027.009-.06-.011-.088-.415-.568-.62-1.144-.549-1.57.085-.506.496-1.01 1.234-1.365.176-.084.364-.15.568-.202.016-.004.032-.013.04-.029.008-.016.002-.037-.01-.052-.727-.893-.837-1.897-.336-2.738C8.976 2.871 10.373 2.112 12.185 2.112c.56 0 1.118.082 1.666.241.019.005.044.001.06-.013a.065.065 0 0 0 .012-.058c-.023-.082-.046-.174-.06-.27-.123-.841.134-1.547.794-2.003z"/></svg>
+                {% elif subject == 'C' %}
+                <svg viewBox="0 0 24 24"><path d="M12.003.013C5.378.013.01 5.377.01 12c0 6.621 5.368 11.986 11.993 11.986 6.622 0 11.988-5.365 11.988-11.986C23.991 5.377 18.625.013 12.003.013zm6.273 13.91l-2.036 1.148c-.461 1.488-1.854 2.593-3.524 2.593-2.046 0-3.71-1.666-3.71-3.712 0-2.045 1.664-3.708 3.71-3.708 1.657 0 3.037 1.088 3.511 2.562l2.039-1.171c-.774-2.457-3.053-4.24-5.761-4.24-3.354 0-6.073 2.717-6.073 6.072 0 3.353 2.719 6.07 6.073 6.07 2.723 0 5.018-1.8 5.771-4.275V15.2h0z"/></svg>
+                {% elif subject == 'C#' %}
+                <svg viewBox="0 0 24 24"><path d="M9.479 7.378c-.774-2.457-3.053-4.24-5.761-4.24C.364 3.138-2.355 5.855-2.355 9.21c0 3.353 2.719 6.07 6.073 6.07 2.723 0 5.018-1.8 5.771-4.275V11.2h-2.036l.004-.002C7.034 12.783 5.485 13.882 3.82 13.882c-2.046 0-3.71-1.666-3.71-3.712 0-2.045 1.664-3.708 3.71-3.708 1.657 0 3.037 1.088 3.511 2.562l2.039-1.171z" transform="translate(4.35 4.79)"/><path d="M19.143 8.35h-1.39l.488-2.327h1.493L20 4.606h-1.492l.46-2.2h-2.222l-.462 2.2h-1.637l.46-2.2h-2.221l-.488 2.327h-1.491l-.295 1.417h1.49l-.49 2.327h-1.49l-.297 1.418h1.49l-.46 2.2h2.222l.461-2.2h1.638l-.46 2.2h2.22l.49-2.327h1.491l.296-1.418zm-4.148 2.327h-1.638l.49-2.327h1.637l-.49 2.327z" transform="translate(-1.08 -1.2)"/></svg>
+                {% else %}
+                <i data-lucide="book-open"></i>
+                {% endif %}
             </div>
-            {% endfor %}
-
-            <button class="btn-add" onclick="showAddForm('{{ subject }}')">Add Question</button>
+            <h2>{{ subject }}</h2>
+            <span class="badge">{{ subject_questions|length }} Question{{ subject_questions|length|pluralize }}</span>
         </div>
         {% endfor %}
     </div>
 
-    <a href="{% url 'home' %}" class="btn-secondary">Back to Home</a>
+    <!-- INDIVIDUAL SUBJECT VIEWS -->
+    {% for subject, subject_questions in questions.items %}
+    <div id="view-{{ subject|slugify }}" class="subject-questions-view" style="display: none;">
+        <div class="sq-header">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button onclick="closeSubject()" class="btn-back-sq" title="Back to Subjects">
+                    <i data-lucide="arrow-left" style="width: 24px; height: 24px;"></i>
+                </button>
+                <div>
+                    <h2 class="sq-title">{{ subject }}</h2>
+                    <p class="sq-subtitle">Manage all questions for this subject</p>
+                </div>
+            </div>
+            <button class="btn-primary-sm" onclick="showAddForm('{{ subject }}')">
+                <i data-lucide="plus"></i> Add Question
+            </button>
+        </div>
+
+        <div>
+            {% for question in subject_questions %}
+            <div class="question-row">
+                <div class="q-header">
+                    <div class="q-title-wrap">
+                        <div class="q-number">{{ forloop.counter }}</div>
+                        <p class="q-text">{{ question.question }}</p>
+                    </div>
+                    <div class="q-actions">
+                        <button type="button" class="btn-action-edit" onclick='openEditForm("{{ subject|escapejs }}", {{ forloop.counter0 }}, "{{ question.question|escapejs }}", "{{ question.options.0|escapejs }}", "{{ question.options.1|escapejs }}", "{{ question.options.2|escapejs }}", "{{ question.options.3|escapejs }}", {{ question.correct }})'>
+                            <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i> Edit
+                        </button>
+                        <form method="post" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="subject" value="{{ subject }}">
+                            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                            <button type="submit" class="btn-action-delete" onclick="return confirm('Are you sure you want to delete this question?');">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="q-options">
+                    {% for option in question.options %}
+                    <div class="q-option {% if forloop.counter0 == question.correct %}correct{% endif %}">
+                        <strong>{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}.</strong> 
+                        {{ option }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 64px 24px; border: 2px dashed #e5e7eb; border-radius: 20px;">
+                <div style="width: 64px; height: 64px; background: #f3f4f6; color: #9ca3af; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                    <i data-lucide="inbox" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h3 style="color: #374151; font-size: 20px; font-weight: 700; margin-bottom: 8px;">No questions yet</h3>
+                <p style="color: #6b7280;">Get started by adding the first question for {{ subject }}.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
-<div id="addModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Add Question</h2>
+<!-- ADD/EDIT MODAL -->
+<div id="addModal" class="modal-overlay">
+    <div class="modal-panel">
+        <div class="modal-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <h2 id="modalTitle">Add New Question</h2>
+            <button class="modal-close" onclick="closeModal()" type="button" style="border: none; padding: 8px; border-radius: 50%; display: flex; cursor: pointer;">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
 
-        <form method="post">
+        <form method="post" class="modal-form">
             {% csrf_token %}
-            <input type="hidden" name="action" value="add">
+            <input type="hidden" id="modalAction" name="action" value="add">
             <input type="hidden" id="modalSubject" name="subject">
+            <input type="hidden" id="modalIndex" name="index" value="">
 
-            <label>Question:</label>
-            <textarea name="question" required></textarea>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label for="questionInput" style="display: block; margin-bottom: 8px;">Question</label>
+                <textarea id="questionInput" name="question" placeholder="Enter your question here..." required style="width: 100%; padding: 14px; min-height: 100px; resize: vertical;"></textarea>
+            </div>
 
-            <label>Option 1:</label>
-            <input type="text" name="option1" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div class="form-group">
+                    <label for="opt1" style="display: block; margin-bottom: 8px;">Option A</label>
+                    <input type="text" id="opt1" name="option1" placeholder="First option" required style="width: 100%; padding: 14px;">
+                </div>
+                <div class="form-group">
+                    <label for="opt2" style="display: block; margin-bottom: 8px;">Option B</label>
+                    <input type="text" id="opt2" name="option2" placeholder="Second option" required style="width: 100%; padding: 14px;">
+                </div>
+            </div>
 
-            <label>Option 2:</label>
-            <input type="text" name="option2" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div class="form-group">
+                    <label for="opt3" style="display: block; margin-bottom: 8px;">Option C</label>
+                    <input type="text" id="opt3" name="option3" placeholder="Third option" required style="width: 100%; padding: 14px;">
+                </div>
+                <div class="form-group">
+                    <label for="opt4" style="display: block; margin-bottom: 8px;">Option D</label>
+                    <input type="text" id="opt4" name="option4" placeholder="Fourth option" required style="width: 100%; padding: 14px;">
+                </div>
+            </div>
 
-            <label>Option 3:</label>
-            <input type="text" name="option3" required>
+            <div class="form-group" style="margin-bottom: 32px;">
+                <label for="correctOpt" style="display: block; margin-bottom: 8px;">Correct Option</label>
+                <select id="correctOpt" name="correct" required style="width: 100%; padding: 14px;">
+                    <option value="" disabled selected>Select the correct answer</option>
+                    <option value="1">Option A</option>
+                    <option value="2">Option B</option>
+                    <option value="3">Option C</option>
+                    <option value="4">Option D</option>
+                </select>
+            </div>
 
-            <label>Option 4:</label>
-            <input type="text" name="option4" required>
-
-            <label>Correct Option (1-4):</label>
-            <input type="number" name="correct" min="1" max="4" required>
-
-            <button type="submit" class="btn-primary">Save</button>
+            <button type="submit" class="btn-submit" style="width: 100%; padding: 16px; border: none; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s;">
+                <i data-lucide="check"></i>
+                <span id="modalBtnText">Save Question</span>
+            </button>
         </form>
     </div>
 </div>
 
 <script>
+var activeSubjectId = null;
+
+function openSubject(subjectId) {
+    document.getElementById('subjectsGridView').style.display = 'none';
+    var views = document.getElementsByClassName('subject-questions-view');
+    for (var i = 0; i < views.length; i++) {
+        views[i].style.display = 'none';
+    }
+    document.getElementById('view-' + subjectId).style.display = 'block';
+    
+    sessionStorage.setItem('activeManageSubject', subjectId);
+    activeSubjectId = subjectId;
+}
+
+function closeSubject() {
+    document.getElementById('subjectsGridView').style.display = 'grid';
+    var views = document.getElementsByClassName('subject-questions-view');
+    for (var i = 0; i < views.length; i++) {
+        views[i].style.display = 'none';
+    }
+    sessionStorage.removeItem('activeManageSubject');
+    activeSubjectId = null;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    var savedSubject = sessionStorage.getItem('activeManageSubject');
+    if (savedSubject && document.getElementById('view-' + savedSubject)) {
+        openSubject(savedSubject);
+    }
+});
+
 function showAddForm(subject) {
+    document.getElementById('modalTitle').innerText = 'Add New Question';
+    document.getElementById('modalAction').value = 'add';
     document.getElementById('modalSubject').value = subject;
-    document.getElementById('addModal').style.display = 'block';
+    document.getElementById('modalIndex').value = '';
+    document.getElementById('modalBtnText').innerText = 'Save Question';
+    
+    // Clear form
+    document.getElementById('questionInput').value = '';
+    document.getElementById('opt1').value = '';
+    document.getElementById('opt2').value = '';
+    document.getElementById('opt3').value = '';
+    document.getElementById('opt4').value = '';
+    document.getElementById('correctOpt').value = '';
+
+    document.getElementById('addModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function openEditForm(subject, index, qText, opt1, opt2, opt3, opt4, correctIndex) {
+    document.getElementById('modalTitle').innerText = 'Edit Question';
+    document.getElementById('modalAction').value = 'edit';
+    document.getElementById('modalSubject').value = subject;
+    document.getElementById('modalIndex').value = index;
+    document.getElementById('modalBtnText').innerText = 'Update Question';
+
+    // Populate form
+    document.getElementById('questionInput').value = qText;
+    document.getElementById('opt1').value = opt1;
+    document.getElementById('opt2').value = opt2;
+    document.getElementById('opt3').value = opt3;
+    document.getElementById('opt4').value = opt4;
+    document.getElementById('correctOpt').value = (correctIndex + 1).toString();
+
+    document.getElementById('addModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
-    document.getElementById('addModal').style.display = 'none';
+    document.getElementById('addModal').classList.remove('active');
+    document.body.style.overflow = '';
 }
 
-window.onclick = function(event) {
-    const modal = document.getElementById('addModal');
-    if (event.target == modal) {
-        modal.style.display = 'none';
+window.addEventListener('click', function(event) {
+    var modal = document.getElementById('addModal');
+    if (event.target === modal) {
+        closeModal();
     }
-}
+});
+
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal();
+    }
+});
 </script>
 {% endblock %}

@@ -223,6 +223,27 @@ def manage_questions_view(request):
                 save_questions(questions)
                 messages.success(request, 'Question deleted successfully!')
 
+        elif action == 'edit':
+            subject = request.POST.get('subject')
+            index = int(request.POST.get('index'))
+            question_text = request.POST.get('question')
+            options = [
+                request.POST.get('option1'),
+                request.POST.get('option2'),
+                request.POST.get('option3'),
+                request.POST.get('option4')
+            ]
+            correct = int(request.POST.get('correct')) - 1
+
+            if subject in questions and 0 <= index < len(questions[subject]):
+                questions[subject][index] = {
+                    'question': question_text,
+                    'options': options,
+                    'correct': correct
+                }
+                save_questions(questions)
+                messages.success(request, 'Question updated successfully!')
+
         return redirect('manage_questions')
 
     return render(request, 'quiz/manage_questions.html', {'questions': questions})
@@ -233,41 +254,22 @@ def manage_users_view(request):
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        if action == 'delete_user':
-            user_id = request.POST.get('user_id')
-            user = get_object_or_404(User, id=user_id)
-
-            if user != request.user:
-                user.delete()
-                messages.success(request, f'User {user.username} deleted successfully!')
-            else:
-                messages.error(request, 'You cannot delete your own account!')
-
-        elif action == 'clear_scores':
-            user_id = request.POST.get('user_id')
-            Score.objects.filter(user_id=user_id).delete()
-            messages.success(request, 'User scores cleared successfully!')
-
-        elif action == 'reset_all':
-            Score.objects.all().delete()
-            messages.success(request, 'All scores reset successfully!')
+        if action == 'clear_my_scores':
+            Score.objects.filter(user=request.user).delete()
+            messages.success(request, 'Your scores have been reset successfully!')
 
         return redirect('manage_users')
 
-    users = User.objects.all()
-    user_data = []
+    scores = Score.objects.filter(user=request.user)
+    total_attempts = scores.count()
+    avg_score = sum(s.percentage for s in scores) / total_attempts if total_attempts > 0 else 0
 
-    for user in users:
-        scores = Score.objects.filter(user=user)
-        total_attempts = scores.count()
-        avg_score = sum(s.percentage for s in scores) / total_attempts if total_attempts > 0 else 0
-
-        user_data.append({
-            'id': user.id,
-            'username': user.username,
-            'first_name': user.first_name,
-            'total_attempts': total_attempts,
-            'avg_score': avg_score
-        })
+    user_data = [{
+        'id': request.user.id,
+        'username': request.user.username,
+        'first_name': request.user.first_name,
+        'total_attempts': total_attempts,
+        'avg_score': avg_score
+    }]
 
     return render(request, 'quiz/manage_users.html', {'users': user_data})

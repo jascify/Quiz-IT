@@ -1,15 +1,29 @@
 {% extends 'quiz/base.html' %}
 
+{% block title %}Choose Subject - Quiz-IT{% endblock %}
+
 {% block content %}
 <div class="home-container">
-    <div class="home-box">
-        <h1 class="page-title">Choose Subject</h1>
+    <div class="start-quiz-box">
+        <div class="start-quiz-icon">
+            <i data-lucide="brain"></i>
+        </div>
+        <h1 class="welcome-title">Start a Quiz</h1>
+        <p class="subtitle">Pick a subject below and test your knowledge</p>
 
-        {% for subject in subjects %}
-        <a href="{% url 'quiz' subject %}" class="btn-home">{{ subject }}</a>
-        {% endfor %}
+        <div class="subject-select-grid">
+            {% for subject in subjects %}
+            <a href="{% url 'quiz' subject %}" class="subject-select-card">
+                <span class="subject-select-name">{{ subject }}</span>
+                <i data-lucide="arrow-right"></i>
+            </a>
+            {% endfor %}
+        </div>
 
-        <a href="{% url 'home' %}" class="btn-secondary" style="margin-top: 20px;">Back</a>
+        <a href="{% url 'home' %}" class="btn-secondary">
+            <i data-lucide="arrow-left" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
+            Back to Home
+        </a>
     </div>
 </div>
 {% endblock %}

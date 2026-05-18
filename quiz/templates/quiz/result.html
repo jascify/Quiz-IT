@@ -1,35 +1,44 @@
 {% extends 'quiz/base.html' %}
 
+{% block title %}Quiz Result - Quiz-IT{% endblock %}
+
 {% block content %}
 <div class="home-container">
-    <div class="result-box">
-        <h1 class="result-title">Quiz Completed!</h1>
-
-        <div class="result-info">
-            <p><strong>Name:</strong> {{ user.first_name }}</p>
-            <p><strong>Subject:</strong> {{ result.subject }}</p>
-            <p><strong>Score:</strong> {{ result.score }}/{{ result.total }}</p>
-            <p><strong>Percentage:</strong> {{ result.percentage|floatformat:1 }}%</p>
-        </div>
-
+    <div class="start-quiz-box" style="max-width: 500px; text-align: center;">
+        
         {% if result.percentage >= 80 %}
-        <p class="remark excellent">
-            <i data-lucide="trophy"></i>
-            Excellent!
-        </p>
+        <div class="start-quiz-icon" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(21, 128, 61, 0.2) 100%); border-color: rgba(34, 197, 94, 0.3);">
+            <i data-lucide="trophy" style="color: #4ade80;"></i>
+        </div>
+        <h1 class="welcome-title" style="color: #4ade80;">Excellent!</h1>
         {% elif result.percentage >= 60 %}
-        <p class="remark good">
-            <i data-lucide="thumbs-up"></i>
-            Good Job!
-        </p>
+        <div class="start-quiz-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(29, 78, 216, 0.2) 100%); border-color: rgba(59, 130, 246, 0.3);">
+            <i data-lucide="thumbs-up" style="color: #60a5fa;"></i>
+        </div>
+        <h1 class="welcome-title" style="color: #60a5fa;">Good Job!</h1>
         {% else %}
-        <p class="remark practice">
-            <i data-lucide="target"></i>
-            Keep Practicing!
-        </p>
+        <div class="start-quiz-icon" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.2) 100%); border-color: rgba(245, 158, 11, 0.3);">
+            <i data-lucide="target" style="color: #fbbf24;"></i>
+        </div>
+        <h1 class="welcome-title" style="color: #fbbf24;">Keep Practicing!</h1>
         {% endif %}
 
-        <a href="{% url 'home' %}" class="btn-primary">Back to Home</a>
+        <p class="subtitle" style="margin-bottom: 24px;">You completed the <strong>{{ result.subject }}</strong> quiz.</p>
+
+        <div style="background: #ffffff; border-radius: 24px; padding: 40px; width: 100%; border: 1px solid #e5e7eb; margin-bottom: 32px; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="font-size: 72px; font-weight: 900; background: linear-gradient(135deg, #065f46 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; letter-spacing: -2px; margin-bottom: 8px;">
+                {{ result.percentage|floatformat:1 }}%
+            </div>
+            <div style="color: #4b5563; font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 8px; background: #ecfdf5; padding: 8px 16px; border-radius: 20px; border: 1px solid #d1fae5;">
+                <i data-lucide="check-circle" style="width: 18px; height: 18px; color: #10b981;"></i>
+                Score: <span style="color: #065f46; font-weight: 700;">{{ result.score }}</span> / {{ result.total }}
+            </div>
+        </div>
+
+        <a href="{% url 'home' %}" class="btn-primary">
+            <i data-lucide="home"></i>
+            <span>Back to Dashboard</span>
+        </a>
     </div>
 </div>
 {% endblock %}
